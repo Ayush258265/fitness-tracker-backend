@@ -44,13 +44,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(
-                            "http://localhost:3000",
-                            "https://fitness-tracker-frontend.vercel.app",
-                            "https://fitness-tracker-frontend-iu0643h0w-ayushs-projects-4abd934e.vercel.app",
-                            "https://fitness-tracker-frontend-git-main-ayushs-projects-4abd934e.vercel.app",
-                            "https://fitness-tracker-frontend-e8kvc80c7-ayushs-projects-4abd934e.vercel.app"  // ← ADD THIS
-                        )
+                        .allowedOriginPatterns("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true)
