@@ -27,6 +27,7 @@
 //    }
 //}
 
+
 package com.example.fitness.config;
 
 import org.springframework.context.annotation.Bean;
@@ -45,9 +46,10 @@ public class WebConfig {
                 registry.addMapping("/**")
                         .allowedOrigins(
                             "http://localhost:3000",
+                            "https://fitness-tracker-frontend.vercel.app",
                             "https://fitness-tracker-frontend-iu0643h0w-ayushs-projects-4abd934e.vercel.app",
                             "https://fitness-tracker-frontend-git-main-ayushs-projects-4abd934e.vercel.app",
-                            "https://fitness-tracker-frontend.vercel.app"
+                            "https://fitness-tracker-frontend-e8kvc80c7-ayushs-projects-4abd934e.vercel.app"  // ← ADD THIS
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
@@ -57,4 +59,3 @@ public class WebConfig {
         };
     }
 }
-
