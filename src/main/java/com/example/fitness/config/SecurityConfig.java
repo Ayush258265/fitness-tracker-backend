@@ -11,15 +11,16 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
-				// Allow these endpoints without authentication
-				.requestMatchers("/auth/**", "/user/create/user", "/user/get/**").permitAll()
-				// All other endpoints need authentication (optional)
-				.anyRequest().permitAll() // Change to .authenticated() later if needed
-		).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .cors(cors -> cors.disable())  // ← THIS IS THE FIX
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()
+            )
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-		return http.build();
-	}
+        return http.build();
+    }
 }

@@ -1,25 +1,60 @@
-package com.example.fitness.config;
+//package com.example.fitness.config;
+//
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//import org.springframework.web.servlet.config.annotation.*;
+//
+//@Configuration
+//public class WebConfig {
+//
+//    @Bean
+//    public WebMvcConfigurer corsConfigurer() {
+//        return new WebMvcConfigurer() {
+//            @Override
+//            public void addCorsMappings(CorsRegistry registry) {
+//                registry.addMapping("/**")
+//                        .allowedOrigins(
+//                            "http://localhost:3000",
+//                            "https://fitness-tracker-frontend-iu0643h0w-ayushs-projects-4abd934e.vercel.app",
+//                            "https://fitness-tracker-frontend-*.vercel.app" // For preview deployments
+//                        )
+//                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+//                        .allowedHeaders("*")
+//                        .allowCredentials(true)
+//                        .maxAge(3600);
+//            }
+//        };
+//    }
+//}
 
-// plase read this code it's help to  connect backend and front end .
+package com.example.fitness.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig {
 
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-	    return new WebMvcConfigurer() {
-	        @Override
-	        public void addCorsMappings(CorsRegistry registry) {
-	            registry.addMapping("/**")
-	                    .allowedOrigins("http://localhost:3000")
-	                    .allowedMethods("GET", "POST", "PUT", "DELETE")
-	                    .allowedHeaders("*")
-	                    .allowCredentials(true);
-	        }
-	    };
-	}
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins(
+                            "http://localhost:3000",
+                            "https://fitness-tracker-frontend-iu0643h0w-ayushs-projects-4abd934e.vercel.app",
+                            "https://fitness-tracker-frontend-git-main-ayushs-projects-4abd934e.vercel.app",
+                            "https://fitness-tracker-frontend.vercel.app"
+                        )
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true)
+                        .maxAge(3600);
+            }
+        };
+    }
 }
+
