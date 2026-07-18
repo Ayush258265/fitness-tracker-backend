@@ -21,7 +21,8 @@ import com.example.fitness.service.CalorieService;
 
 @RestController
 @RequestMapping("/calorie")
-@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:3000}")
+//@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:3000}")
+@CrossOrigin(origins = "*")
 public class CalorieController {
 
 	@Autowired

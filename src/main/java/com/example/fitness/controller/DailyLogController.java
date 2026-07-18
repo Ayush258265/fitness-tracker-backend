@@ -18,7 +18,8 @@ import com.example.fitness.service.DailyLogService;
 
 @RestController
 @RequestMapping("/logs")
-@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:3000}")
+//@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:3000}")
+@CrossOrigin(origins = "*")
 public class DailyLogController {
 
 	@Autowired

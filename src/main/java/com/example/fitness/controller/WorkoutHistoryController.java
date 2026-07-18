@@ -19,7 +19,8 @@ import com.example.fitness.service.WorkoutHistoryService;
 
 @RestController
 @RequestMapping("/workout/history")
-@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:3000}")
+//@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:3000}")
+@CrossOrigin(origins = "*")
 public class WorkoutHistoryController {
 
 	@Autowired

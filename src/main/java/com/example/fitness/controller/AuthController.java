@@ -17,7 +17,8 @@ import com.example.fitness.service.UserService;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:3000}")
+//@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:3000}")
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     @Autowired

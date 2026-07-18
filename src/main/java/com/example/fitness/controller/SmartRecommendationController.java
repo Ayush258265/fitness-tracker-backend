@@ -13,7 +13,8 @@ import com.example.fitness.service.SmartRecommendationService;
 
 @RestController
 @RequestMapping("/api/recommendation")
-@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:3000}")
+//@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:3000}")
+@CrossOrigin(origins = "*")
 public class SmartRecommendationController {
 
 	@Autowired
