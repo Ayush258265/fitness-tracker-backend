@@ -35,6 +35,11 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+	
+	@GetMapping("/health")
+	public String health() {
+	    return "Backend is running!";
+	}
 
 //	UserController(UserRepository userRepository) {
 //		this.userRepository = userRepository;
