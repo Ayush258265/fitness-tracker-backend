@@ -15,7 +15,7 @@ import com.example.fitness.service.ProgressService;
 @RestController
 @RequestMapping("/logs/progress")
 //@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:3000}")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class ProgressController {
 
 	@Autowired

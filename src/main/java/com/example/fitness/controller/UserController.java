@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RequestMapping(path = "/user")
 @Validated
 //@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:3000}")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class UserController {
 
 //	private final UserRepository userRepository;

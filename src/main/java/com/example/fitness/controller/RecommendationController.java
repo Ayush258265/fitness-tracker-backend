@@ -15,7 +15,7 @@ import com.example.fitness.service.RecommendationService;
 @RestController
 @RequestMapping("/recommendations")
 //@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:3000}")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class RecommendationController {
 
 //	private final UserController userController;

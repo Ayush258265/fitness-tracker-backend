@@ -15,7 +15,7 @@ import com.example.fitness.service.BMIResponseService;
 @RestController
 @RequestMapping("/users/bmi")
 //@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:3000}")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class BMIController {
 
 	@Autowired
