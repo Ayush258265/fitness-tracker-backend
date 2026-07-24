@@ -17,22 +17,21 @@ public class WorkoutHistoryService {
 
 	@Autowired
 	private WorkoutHistoryRepository workoutHistoryRepository;
-	
 
-    @Autowired
-    private CalorieService calorieService; 
+	@Autowired
+	private CalorieService calorieService;
 
 	public WorkoutHistory saveWorkout(Long userId, String workoutName, Integer duration, Integer exercisesCompleted,
 			Integer totalCalories) {
-		
+
 // Save workout history
 		WorkoutHistory history = new WorkoutHistory(userId, LocalDate.now(), workoutName, duration, totalCalories,
 				exercisesCompleted);
-		
+
 		WorkoutHistory saved = workoutHistoryRepository.save(history);
 
 // Also add a BURNED entry to calorie_logs
-		
+
 		if (totalCalories != null && totalCalories > 0) {
 			calorieService.addBurnedCalories(userId, totalCalories, workoutName);
 		}
@@ -187,6 +186,75 @@ public class WorkoutHistoryService {
 		}
 
 		return bestStreak;
+	}
+
+	// ==================== WEEKLY SUMMARY ====================
+	
+	public Map<String, Object> getWeeklyResults(Long userId) {
+		Map<String, Object> result = new HashMap<>();
+
+		// Get current week (Monday to Sunday)
+		LocalDate today = LocalDate.now();
+		LocalDate startOfWeek = today.with(java.time.DayOfWeek.MONDAY);
+		LocalDate endOfWeek = today.with(java.time.DayOfWeek.SUNDAY);
+
+		// Get weekly totals
+		Object[] totals = workoutHistoryRepository.getWeeklyTotals(userId, startOfWeek, endOfWeek);
+		Long totalCalories = totals[0] != null ? ((Number) totals[0]).longValue() : 0L;
+		Long totalDuration = totals[1] != null ? ((Number) totals[1]).longValue() : 0L;
+		Long distinctDays = totals[2] != null ? ((Number) totals[2]).longValue() : 0L;
+
+		// Get daily breakdown
+		List<Object[]> dailyData = workoutHistoryRepository.getWeeklySummaryData(userId, startOfWeek, endOfWeek);
+
+		// Build daily breakdown map (Mon to Sun)
+		Map<String, Map<String, Object>> dayMap = new HashMap<>();
+		String[] dayNames = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+
+		// Initialize all days with zeros
+		for (String day : dayNames) {
+			Map<String, Object> dayStats = new HashMap<>();
+			dayStats.put("calories", 0L);
+			dayStats.put("duration", 0L);
+			dayMap.put(day, dayStats);
+		}
+
+		// Populate with actual data
+		for (Object[] row : dailyData) {
+			LocalDate date = (LocalDate) row[0];
+			String dayName = date.getDayOfWeek().toString().substring(0, 3);
+			String formattedDay = dayName.substring(0, 1) + dayName.substring(1, 3).toLowerCase(); // MON -> Mon
+
+			Long calories = row[1] != null ? ((Number) row[1]).longValue() : 0L;
+			Long duration = row[2] != null ? ((Number) row[2]).longValue() : 0L;
+
+			// ✅ FIXED: Update the existing day entry
+			Map<String, Object> dayStats = dayMap.get(formattedDay);
+			dayStats.put("calories", calories);
+			dayStats.put("duration", duration);
+		}
+
+		// Build daily breakdown list in correct order (Mon to Sun)
+		List<Map<String, Object>> dailyBreakdown = new ArrayList<>();
+		for (String day : dayNames) {
+			Map<String, Object> entry = new HashMap<>();
+			entry.put("day", day);
+			entry.put("calories", dayMap.get(day).get("calories"));
+			entry.put("duration", dayMap.get(day).get("duration"));
+			dailyBreakdown.add(entry);
+		}
+
+		// Calculate current streak
+		int currentStreak = calculateCurrentStreak(userId);
+
+		// Build final response
+		result.put("totalWorkouts", distinctDays.intValue());
+		result.put("totalCalories", totalCalories);
+		result.put("totalDuration", totalDuration);
+		result.put("currentStreak", currentStreak);
+		result.put("dailyBreakdown", dailyBreakdown);
+
+		return result;
 	}
 
 }

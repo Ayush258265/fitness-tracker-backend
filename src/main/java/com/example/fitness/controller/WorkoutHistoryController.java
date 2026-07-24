@@ -79,4 +79,15 @@ public class WorkoutHistoryController {
 		}
 	}
 
+	// ==================== WEEKLY RESULTS ====================
+	@GetMapping("/weekly-results/{userId}")
+	public ResponseEntity<?> getWeeklyResults(@PathVariable Long userId) {
+	    try {
+	        Map<String, Object> results = workoutHistoryService.getWeeklyResults(userId);
+	        return ResponseEntity.ok(results);
+	    } catch (Exception e) {
+	        return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+	    }
+	}
+	
 }
