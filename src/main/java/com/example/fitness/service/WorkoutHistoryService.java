@@ -189,7 +189,6 @@ public class WorkoutHistoryService {
 	}
 
 	// ==================== WEEKLY SUMMARY ====================
-	
 	public Map<String, Object> getWeeklyResults(Long userId) {
 		Map<String, Object> result = new HashMap<>();
 
@@ -198,11 +197,25 @@ public class WorkoutHistoryService {
 		LocalDate startOfWeek = today.with(java.time.DayOfWeek.MONDAY);
 		LocalDate endOfWeek = today.with(java.time.DayOfWeek.SUNDAY);
 
-		// Get weekly totals
+		// Get weekly totals - FIXED CASTING
 		Object[] totals = workoutHistoryRepository.getWeeklyTotals(userId, startOfWeek, endOfWeek);
-		Long totalCalories = totals[0] != null ? ((Number) totals[0]).longValue() : 0L;
-		Long totalDuration = totals[1] != null ? ((Number) totals[1]).longValue() : 0L;
-		Long distinctDays = totals[2] != null ? ((Number) totals[2]).longValue() : 0L;
+
+		// ✅ SAFE CASTING WITH NULL CHECKS
+		Long totalCalories = 0L;
+		Long totalDuration = 0L;
+		Long distinctDays = 0L;
+
+		if (totals != null && totals.length > 0) {
+			if (totals[0] != null) {
+				totalCalories = ((Number) totals[0]).longValue();
+			}
+			if (totals[1] != null) {
+				totalDuration = ((Number) totals[1]).longValue();
+			}
+			if (totals[2] != null) {
+				distinctDays = ((Number) totals[2]).longValue();
+			}
+		}
 
 		// Get daily breakdown
 		List<Object[]> dailyData = workoutHistoryRepository.getWeeklySummaryData(userId, startOfWeek, endOfWeek);
@@ -220,18 +233,24 @@ public class WorkoutHistoryService {
 		}
 
 		// Populate with actual data
-		for (Object[] row : dailyData) {
-			LocalDate date = (LocalDate) row[0];
-			String dayName = date.getDayOfWeek().toString().substring(0, 3);
-			String formattedDay = dayName.substring(0, 1) + dayName.substring(1, 3).toLowerCase(); // MON -> Mon
+		if (dailyData != null) {
+			for (Object[] row : dailyData) {
+				if (row == null || row.length < 3)
+					continue;
 
-			Long calories = row[1] != null ? ((Number) row[1]).longValue() : 0L;
-			Long duration = row[2] != null ? ((Number) row[2]).longValue() : 0L;
+				LocalDate date = (LocalDate) row[0];
+				String dayName = date.getDayOfWeek().toString().substring(0, 3);
+				String formattedDay = dayName.substring(0, 1) + dayName.substring(1, 3).toLowerCase();
 
-			// ✅ FIXED: Update the existing day entry
-			Map<String, Object> dayStats = dayMap.get(formattedDay);
-			dayStats.put("calories", calories);
-			dayStats.put("duration", duration);
+				Long calories = row[1] != null ? ((Number) row[1]).longValue() : 0L;
+				Long duration = row[2] != null ? ((Number) row[2]).longValue() : 0L;
+
+				Map<String, Object> dayStats = dayMap.get(formattedDay);
+				if (dayStats != null) {
+					dayStats.put("calories", calories);
+					dayStats.put("duration", duration);
+				}
+			}
 		}
 
 		// Build daily breakdown list in correct order (Mon to Sun)
