@@ -86,8 +86,10 @@ public class WorkoutHistoryController {
 			Map<String, Object> results = workoutHistoryService.getWeeklyResults(userId);
 			return ResponseEntity.ok(results);
 		} catch (Exception e) {
-			e.printStackTrace(); // Log the error
-			return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+			e.printStackTrace();
+			// ✅ Return proper error message
+			return ResponseEntity.badRequest()
+					.body(Map.of("error", e.getMessage(), "message", "Failed to fetch weekly results"));
 		}
 	}
 
