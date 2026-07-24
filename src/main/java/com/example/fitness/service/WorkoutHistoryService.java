@@ -188,7 +188,6 @@ public class WorkoutHistoryService {
 		return bestStreak;
 	}
 
-	
 	// ==================== WEEKLY SUMMARY ====================
 	public Map<String, Object> getWeeklyResults(Long userId) {
 		Map<String, Object> result = new HashMap<>();
@@ -199,40 +198,14 @@ public class WorkoutHistoryService {
 			LocalDate startOfWeek = today.with(java.time.DayOfWeek.MONDAY);
 			LocalDate endOfWeek = today.with(java.time.DayOfWeek.SUNDAY);
 
-			// ✅ Get weekly totals with proper null handling
-			Object[] totals = workoutHistoryRepository.getWeeklyTotals(userId, startOfWeek, endOfWeek);
+			// ✅ Calculate totals from daily breakdown instead of using getWeeklyTotals
+			List<Object[]> dailyData = workoutHistoryRepository.getWeeklySummaryData(userId, startOfWeek, endOfWeek);
 
 			Long totalCalories = 0L;
 			Long totalDuration = 0L;
-			Long distinctDays = 0L;
+			Long totalWorkouts = 0L;
 
-			if (totals != null && totals.length >= 3) {
-				try {
-					totalCalories = totals[0] != null ? ((Number) totals[0]).longValue() : 0L;
-				} catch (Exception e) {
-					totalCalories = 0L;
-				}
-				try {
-					totalDuration = totals[1] != null ? ((Number) totals[1]).longValue() : 0L;
-				} catch (Exception e) {
-					totalDuration = 0L;
-				}
-				try {
-					distinctDays = totals[2] != null ? ((Number) totals[2]).longValue() : 0L;
-				} catch (Exception e) {
-					distinctDays = 0L;
-				}
-			}
-
-			// ✅ Get daily breakdown
-			List<Object[]> dailyData = new ArrayList<>();
-			try {
-				dailyData = workoutHistoryRepository.getWeeklySummaryData(userId, startOfWeek, endOfWeek);
-			} catch (Exception e) {
-				dailyData = new ArrayList<>();
-			}
-
-			// ✅ Build daily breakdown map (Mon to Sun)
+			// Build daily breakdown map (Mon to Sun)
 			Map<String, Map<String, Object>> dayMap = new HashMap<>();
 			String[] dayNames = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 
@@ -244,7 +217,7 @@ public class WorkoutHistoryService {
 				dayMap.put(day, dayStats);
 			}
 
-			// ✅ Populate with actual data
+			// ✅ Populate with actual data and calculate totals
 			if (dailyData != null) {
 				for (Object[] row : dailyData) {
 					if (row == null || row.length < 3)
@@ -258,6 +231,11 @@ public class WorkoutHistoryService {
 						Long calories = row[1] != null ? ((Number) row[1]).longValue() : 0L;
 						Long duration = row[2] != null ? ((Number) row[2]).longValue() : 0L;
 
+						// ✅ Add to totals
+						totalCalories += calories;
+						totalDuration += duration;
+						totalWorkouts++; // Count each day with data
+
 						Map<String, Object> dayStats = dayMap.get(formattedDay);
 						if (dayStats != null) {
 							dayStats.put("calories", calories);
@@ -269,7 +247,7 @@ public class WorkoutHistoryService {
 				}
 			}
 
-			// ✅ Build daily breakdown list
+			// Build daily breakdown list
 			List<Map<String, Object>> dailyBreakdown = new ArrayList<>();
 			for (String day : dayNames) {
 				Map<String, Object> entry = new HashMap<>();
@@ -279,11 +257,11 @@ public class WorkoutHistoryService {
 				dailyBreakdown.add(entry);
 			}
 
-			// ✅ Calculate current streak
+			// Calculate current streak
 			int currentStreak = calculateCurrentStreak(userId);
 
-			// ✅ Build final response
-			result.put("totalWorkouts", distinctDays.intValue());
+			// Build final response
+			result.put("totalWorkouts", totalWorkouts);
 			result.put("totalCalories", totalCalories);
 			result.put("totalDuration", totalDuration);
 			result.put("currentStreak", currentStreak);
@@ -291,7 +269,7 @@ public class WorkoutHistoryService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			// Return zeros instead of throwing
+			// Return zeros
 			result.put("totalWorkouts", 0);
 			result.put("totalCalories", 0L);
 			result.put("totalDuration", 0L);
